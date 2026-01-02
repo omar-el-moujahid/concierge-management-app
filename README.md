@@ -8,4 +8,4 @@ Full-stack application for managing a concierge company.
 - Database: PostgreSQL
 
 ## How to run
-
+pip install psycopg2-binary
