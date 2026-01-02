@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker , declarative_base
 
-DATABASE_URL="postgresql+asyncpg://neondb_owner:npg_aMJcm0rkojO1@ep-fancy-pond-aboz4wzr-pooler.eu-west-2.aws.neon.tech/Conciergerie?ssl=require&channel_binding=require"
+DATABASE_URL="postgresql+asyncpg://neondb_owner:npg_aMJcm0rkojO1@ep-fancy-pond-aboz4wzr-pooler.eu-west-2.aws.neon.tech/Conciergerie?ssl=require"
 
 # Base pour les models
 Base = declarative_base()
@@ -10,7 +10,7 @@ engine = create_async_engine(
     DATABASE_URL, 
     echo=False,
     future=True,
-    poll_size=20,
+    pool_size=20,
     max_overflow=10,
     pool_timeout=10,
     )
