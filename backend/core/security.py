@@ -1,12 +1,42 @@
 from datetime import datetime, timedelta
-from jose import jwt
 from passlib.context import CryptContext
 
+from jose import JWTError, jwt
+from fastapi import HTTPException, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from database import get_async_session
+from models.admin import Admin
+from fastapi.security import OAuth2PasswordBearer
 SECRET_KEY = "SECRET_TRES_FORT"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+async def get_current_admin(
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_async_session)
+):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401)
+
+    except JWTError:
+        raise HTTPException(status_code=401)
+
+    result = await db.execute(
+        select(Admin).where(Admin.email == email)
+    )
+    admin = result.scalar_one_or_none()
+
+    if admin is None:
+        raise HTTPException(status_code=401)
+
+    return admin
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
