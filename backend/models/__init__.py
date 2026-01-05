@@ -11,3 +11,4 @@ from .categorie import Categorie
 from .produit import Produit
 from .facture import Facture
 from .paiement import Paiement
+from .admin import Admin
