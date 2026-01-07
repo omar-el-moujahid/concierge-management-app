@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_async_session
 from models.admin import Admin
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy import select
 SECRET_KEY = "SECRET_TRES_FORT"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
