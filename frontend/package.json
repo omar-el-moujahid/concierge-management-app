@@ -11,5 +11,12 @@
   "devDependencies": {
     "typescript": "~5.9.3",
     "vite": "^7.2.4"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "mdb-react-ui-kit": "^10.0.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.11.0"
   }
 }
