@@ -22,7 +22,7 @@ from schemas.auth import LoginAdmin
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException
 from core.security import JWTError, SECRET_KEY, ALGORITHM
-from routes import client_routes
+from routes import client_routes, commande_routes
 from sqlalchemy.orm import selectinload
 # pour ajouter des en-têtes CORS
 from fastapi.middleware.cors import CORSMiddleware
@@ -115,4 +115,5 @@ async def me(admin: Admin = Depends(get_current_admin),db: AsyncSession = Depend
 
 app.include_router(client_routes.router)
 
-# ======================================================
+# =======================Commande===============================
+app.include_router(commande_routes.router)

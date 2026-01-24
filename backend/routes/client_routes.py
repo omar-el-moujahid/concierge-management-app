@@ -6,7 +6,9 @@ from models.contact import Contact
 from models.telephone import Telephone
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-
+from sqlalchemy import select, func
+from models.commande import Commande
+from models.detailsCommande import DetailsCommande
 router = APIRouter()
 
 @router.get("/clients")
@@ -22,6 +24,87 @@ async def list_clients(db: AsyncSession = Depends(get_async_session)):
     )
     clients = result.scalars().all()
     return clients
+
+
+@router.get("/clients/total-spent")
+async def total_spent(db: AsyncSession = Depends(get_async_session)):
+    result = await db.execute(
+        select(
+            Client.id_client,
+            func.coalesce(
+                func.sum(
+                    (DetailsCommande.prix_applique * DetailsCommande.quantite)
+                    - DetailsCommande.remise
+                ),
+                0
+            ).label("total_spent")
+        )
+        .outerjoin(Commande, Commande.id_client == Client.id_client)
+        .outerjoin(DetailsCommande, DetailsCommande.id_commande == Commande.id_commande)
+        .group_by(Client.id_client)
+    )
+
+    return [
+        {
+            "id_client": r.id_client,
+            "total_spent": float(r.total_spent)
+        }
+        for r in result
+    ]
+@router.get("/clients/summary")
+async def clients_summary(db: AsyncSession = Depends(get_async_session)):
+    result = await db.execute(
+        select(
+            Client.id_client,
+            func.count(func.distinct(Commande.id_commande)).label("orders_count"),
+            func.coalesce(
+                func.sum(
+                    (DetailsCommande.prix_applique * DetailsCommande.quantite)
+                    - DetailsCommande.remise
+                ),
+                0
+            ).label("total_spent")
+        )
+        .outerjoin(Commande, Commande.id_client == Client.id_client)
+        .outerjoin(DetailsCommande, DetailsCommande.id_commande == Commande.id_commande)
+        .group_by(Client.id_client)
+    )
+
+    return [
+        {
+            "id_client": r.id_client,
+            "orders_count": r.orders_count,
+            "total_spent": float(r.total_spent)
+        }
+        for r in result
+    ]
+
+
+@router.get("/clients/totalSpent")
+async def total_spent(db: AsyncSession = Depends(get_async_session)):
+    result = await db.execute(
+        select(
+            Client.id_client,
+            func.coalesce(
+                func.sum(
+                    (DetailsCommande.prix_applique * DetailsCommande.quantite)
+                    - DetailsCommande.remise
+                ),
+                0
+            ).label("total_spent")
+        )
+        .join(Commande, Commande.id_client == Client.id_client)
+        .join(DetailsCommande, DetailsCommande.id_commande == Commande.id_commande)
+        .group_by(Client.id_client)
+    )
+
+    return [
+        {
+            "id_client": row.id_client,
+            "total_spent": float(row.total_spent)
+        }
+        for row in result
+    ]
 
 @router.get("/clients/{client_id}")
 async def get_client(client_id: int, db: AsyncSession = Depends(get_async_session)):
@@ -88,5 +171,7 @@ async def delete_client(client_id: int, db: AsyncSession = Depends(get_async_ses
     await db.commit()
 
     return {"detail": "Client and related data deleted successfully"}
+
+
 
 
