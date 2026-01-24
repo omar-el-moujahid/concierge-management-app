@@ -73,14 +73,42 @@ async def login_admin(data: LoginAdmin, db: AsyncSession = Depends(get_async_ses
 # Dependency to get current admin
 
 @app.get("/auth/me")
-async def me(admin: Admin = Depends(get_current_admin)):
-    return {"email": admin.email,
-            "is_super_admin": admin.is_super_admin,
-            "is_active": admin.is_active,
-            "nom": admin.nom,
-            "prenom": admin.prenom,
-            "contact": admin.contact
+async def me(admin: Admin = Depends(get_current_admin),db: AsyncSession = Depends(get_async_session)):
+    resultat_contact  = await db.execute(select(Contact).where(Contact.id_contact == admin.id_contact))
+    contact = resultat_contact.scalar_one_or_none()
+    if contact:
+        result_tel = await db.execute(
+            select(Telephone).where(Telephone.id_contact == contact.id_contact)
+        )
+        telephones = [
+            {
+                "id_telephone": t.id_telephone,
+                "numero": t.numero,
+                "type": t.type
             }
+            for t in result_tel.scalars().all()
+        ]
+
+    return {
+        "email": admin.email,
+        "is_super_admin": admin.is_super_admin,
+        "is_active": admin.is_active,
+        "nom": admin.nom,
+        "prenom": admin.prenom,
+        "possition": admin.possition,
+
+        "contact": {
+            "id_contact": contact.id_contact if contact else None,
+            "facebook": contact.facebook if contact else None,
+            "adresse_postale": contact.adresse_postale if contact else None,
+            "instagram": contact.instagram if contact else None,
+            "email": contact.email if contact else None,
+            "id_client": getattr(contact, "id_client", None),
+            "telephones": telephones
+        }
+    }
+
+
 
 
 # =======================Client===============================

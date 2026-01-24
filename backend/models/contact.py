@@ -13,4 +13,5 @@ class Contact(Base):
     id_client = Column(Integer, ForeignKey("client.id_client"), unique=True)
 
     client = relationship("Client", back_populates="contact")
+    admin = relationship("Admin", back_populates="contact_info")
     telephones = relationship("Telephone", back_populates="contact")
