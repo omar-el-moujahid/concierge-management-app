@@ -4,7 +4,7 @@ import omar from "../images/omar.jpg";
 import logo from "../images/logo.png";
 function HeaderNavigation() {
   return (
-    <header className="bg-light border-bottom px-5 py-4">
+<header className="bg-light border-bottom px-4 py-3 sticky-top">
       <div className="bg-white rounded shadow-sm px-4 py-2 w-100">
         <div className="d-flex align-items-center justify-content-between w-100">
 

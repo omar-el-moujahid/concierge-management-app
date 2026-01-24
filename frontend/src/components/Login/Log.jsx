@@ -93,7 +93,7 @@ useEffect(() => {
   };
 
   return (
-    <MDBContainer fluid className="my-1 login-container">
+    <MDBContainer fluid className="my-1 login-container " style={{ maxWidth: "1280px" }}>
       <MDBRow className="g-0 align-items-center">
         <MDBCol md="6">
           <MDBCard
