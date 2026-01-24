@@ -8,6 +8,9 @@ import Profil from "../profil/profil";
 import AdminLayout from "../layouts/layouts";
 import HeaderNavigation from "../header/header";
 import "./App.css";
+// import ClientsPage from "../Client/ClientsPage";
+import ClientsPage from "../Client/ClientsPage";
+import ClientProfil from "../Client/Client";
 function App() {
   return (
     <BrowserRouter>
@@ -24,6 +27,8 @@ function App() {
               >
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profil" element={<Profil />} />
+              <Route path="/clients" element={<ClientsPage />} />
+              <Route path="/clients/:id" element={<ClientProfil />} />
         </Route>
         </Routes>
       </div>

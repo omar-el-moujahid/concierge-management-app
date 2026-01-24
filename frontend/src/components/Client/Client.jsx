@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import omar from "../images/omar.jpg";
 
 import {
@@ -10,47 +11,43 @@ import {
   MDBCardBody,
   MDBCardImage,
   MDBBtn,
-  MDBProgress,
-  MDBProgressBar,
   MDBIcon,
   MDBListGroup,
   MDBListGroupItem
 } from "mdb-react-ui-kit";
 
-export default function Profil() {
+export default function ClientProfile() {
+  const { id } = useParams(); 
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    async function fetchClient() {
       try {
-        const response = await fetch("http://127.0.0.1:8000/auth/me", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await fetch(`http://127.0.0.1:8000/clients/${id}`);
 
         if (!response.ok) {
-          throw new Error("Failed to fetch profile data");
+          throw new Error("Failed to fetch client");
         }
 
         const result = await response.json();
         setData(result);
       } catch (error) {
-        console.error("Error fetching profile data:", error);
+        console.error("Error fetching client profile:", error);
       }
-    };
+    }
 
-    fetchProfile();
-  }, []);
+    fetchClient();
+  }, [id]);
 
   if (!data) {
-    return <p style={{ textAlign: "center" }}>Chargement du profil...</p>;
+    return <p style={{ textAlign: "center" }}>Chargement du client...</p>;
   }
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
       <MDBContainer className="py-5">
         <MDBRow>
+
           {/* LEFT COLUMN */}
           <MDBCol lg="4">
             <MDBCard className="mb-4">
@@ -63,14 +60,18 @@ export default function Profil() {
                   fluid
                 />
 
-                <p className="text-muted mb-1">{data.possition}</p>
+                <h5 className="my-3">
+                  {data.prenom_client} {data.nom_client}
+                </h5>
+
+                <p className="text-muted mb-1">Client</p>
+
                 <p className="text-muted mb-4">
-                  {data.contact.adresse_postale}
+                  {data.contact?.adresse_postale ?? "Aucune adresse"}
                 </p>
 
                 <div className="d-flex justify-content-center mb-2">
-                  <MDBBtn>Modifier Les infos </MDBBtn>
-                  {/* <MDBBtn outline className="ms-1">Message</MDBBtn> */}
+                  <MDBBtn>Modifier les infos</MDBBtn>
                 </div>
               </MDBCardBody>
             </MDBCard>
@@ -79,19 +80,26 @@ export default function Profil() {
             <MDBCard className="mb-4 mb-lg-0">
               <MDBCardBody className="p-0">
                 <MDBListGroup flush className="rounded-3">
+
                   <MDBListGroupItem className="d-flex align-items-center p-3">
                     <MDBIcon fab icon="facebook fa-lg" className="me-3" />
-                    <MDBCardText>{data.contact.facebook}</MDBCardText>
+                    <MDBCardText>
+                      {data.contact?.facebook ?? "—"}
+                    </MDBCardText>
                   </MDBListGroupItem>
 
                   <MDBListGroupItem className="d-flex align-items-center p-3">
                     <MDBIcon fab icon="instagram fa-lg" className="me-3" />
-                    <MDBCardText>{data.contact.instagram}</MDBCardText>
+                    <MDBCardText>
+                      {data.contact?.instagram ?? "—"}
+                    </MDBCardText>
                   </MDBListGroupItem>
 
                   <MDBListGroupItem className="d-flex align-items-center p-3">
                     <MDBIcon fas icon="envelope fa-lg" className="me-3" />
-                    <MDBCardText>{data.contact.email}</MDBCardText>
+                    <MDBCardText>
+                      {data.contact?.email ?? "—"}
+                    </MDBCardText>
                   </MDBListGroupItem>
 
                 </MDBListGroup>
@@ -110,7 +118,7 @@ export default function Profil() {
                   </MDBCol>
                   <MDBCol sm="9">
                     <MDBCardText className="text-muted">
-                      {data.nom} {data.prenom}
+                      {data.prenom_client} {data.nom_client}
                     </MDBCardText>
                   </MDBCol>
                 </MDBRow>
@@ -122,7 +130,7 @@ export default function Profil() {
                   </MDBCol>
                   <MDBCol sm="9">
                     <MDBCardText className="text-muted">
-                      {data.email}
+                      {data.contact?.email ?? "—"}
                     </MDBCardText>
                   </MDBCol>
                 </MDBRow>
@@ -133,8 +141,8 @@ export default function Profil() {
                     <MDBCardText>Téléphones</MDBCardText>
                   </MDBCol>
                   <MDBCol sm="9">
-                    {data.contact.telephones.length > 0 ? (
-                      data.contact.telephones.map((tel) => (
+                    {data.contact?.telephones?.length > 0 ? (
+                      data.contact.telephones.map(tel => (
                         <MDBCardText
                           className="text-muted"
                           key={tel.id_telephone}
@@ -149,56 +157,13 @@ export default function Profil() {
                     )}
                   </MDBCol>
                 </MDBRow>
-                <hr />
-                <MDBRow>
-                  <MDBCol sm="3">
-                    <MDBCardText>Position</MDBCardText>
-                  </MDBCol>
-                  <MDBCol sm="9">
-                    <MDBCardText className="text-muted">
-                      {data.possition}
-                    </MDBCardText>
-                  </MDBCol>
-                </MDBRow>
-                <hr />
 
-                <MDBRow>
-                  <MDBCol sm="3">
-                      <MDBCardText>Adresse </MDBCardText>
-                    </MDBCol>
-                  {data.contact.adresse_postale ? (
-                    <MDBCol sm="9">
-                      <MDBCardText className="text-muted">
-                        {data.contact.adresse_postale}
-                      </MDBCardText>
-                  </MDBCol>
-                  ) : <MDBCardText className="text-muted">
-                        Aucun Adresse
-                      </MDBCardText>
-                  }
-                </MDBRow>
-                <hr />
-                <MDBRow>
-                  <MDBCol sm="3">
-                      <MDBCardText> Contact </MDBCardText>
-                    </MDBCol>
-                  {data.contact.facebook || data.contact.instagram ? (
-                    <MDBCol sm="9">
-                      <MDBCardText className="text-muted">
-                        Faceboock {data.contact.facebook} | Instagram {data.contact.instagram}
-                      </MDBCardText>
-                  </MDBCol>
-                  ) : <MDBCardText className="text-muted">
-                        Aucun infos
-                      </MDBCardText>
-                  }
-                </MDBRow>
               </MDBCardBody>
             </MDBCard>
 
-            
-
+            {/* 🔜 ICI PLUS TARD : HISTORIQUE DES COMMANDES */}
           </MDBCol>
+
         </MDBRow>
       </MDBContainer>
     </section>
