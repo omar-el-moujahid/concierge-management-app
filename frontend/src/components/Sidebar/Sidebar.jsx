@@ -33,11 +33,11 @@ export default function Sidebar() {
           <FaUsers />
           <span>Clients</span>
         </li>
-
-        {/* Demandes / Services */}
-        <li onClick={() => navigate("/demandes")}>
+    
+        {/* Commandes */}
+        <li onClick={() => navigate("/commande")}>
           <FaClipboardList />
-          <span>Demandes</span>
+          <span>Commandes</span>
         </li>
 
         {/* Services */}
@@ -52,24 +52,7 @@ export default function Sidebar() {
           <span>Facturation</span>
         </li>
 
-        {/* Messages */}
-        <li onClick={() => navigate("/messages")}>
-          <FaEnvelope />
-          <span>Messages</span>
-        </li>
-
-        {/* Statistiques */}
-        <li onClick={() => navigate("/statistiques")}>
-          <FaChartPie />
-          <span>Statistiques</span>
-        </li>
-
-        {/* Équipe */}
-        <li onClick={() => navigate("/equipe")}>
-          <FaUserTie />
-          <span>Équipe</span>
-        </li>
-
+      
         {/* Profil */}
         <li onClick={() => navigate("/profil")}>
           <FaUsers />

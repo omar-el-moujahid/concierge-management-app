@@ -4,11 +4,14 @@ from database import get_async_session
 from models.client import Client
 from models.contact import Contact
 from models.telephone import Telephone
+from models.cart_fedelite import CartFidelite
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from models.commande import Commande
 from models.detailsCommande import DetailsCommande
+from pydantic import BaseModel
+from typing import Optional
 router = APIRouter()
 
 @router.get("/clients")
@@ -128,7 +131,8 @@ async def get_client(client_id: int, db: AsyncSession = Depends(get_async_sessio
 async def create_client(client_data: dict, db: AsyncSession = Depends(get_async_session)):
     new_client = Client(
         nom_client=client_data.get("nom_client"),
-        prenom_client=client_data.get("prenom_client")
+        prenom_client=client_data.get("prenom_client"),
+        hash_password=client_data.get("hash_password")
     )
     new_contact = Contact(
         instagram=client_data.get("instagram"),
@@ -155,23 +159,52 @@ async def create_client(client_data: dict, db: AsyncSession = Depends(get_async_
 
 @router.delete("/clients/{client_id}")
 async def delete_client(client_id: int, db: AsyncSession = Depends(get_async_session)):
-    # Fetch the client
+    await db.execute(delete(Telephone).where(Telephone.id_contact.in_(
+        select(Contact.id_contact).where(Contact.id_client == client_id)
+    )))
+    await db.execute(delete(Contact).where(Contact.id_client == client_id))
+    await db.execute(delete(CartFidelite).where(CartFidelite.id_client == client_id))
+    await db.execute(delete(Client).where(Client.id_client == client_id))
+    await db.commit()
+
+    return {"detail": "Client and related data deleted successfully"}
+
+# nouveau code
+
+class ClientUpdate(BaseModel):
+    nom_client: Optional[str] = None
+    prenom_client: Optional[str] = None
+    hash_password: Optional[str] = None
+
+@router.patch("/clients/{client.id}")
+async def update_client(client_id: int, client_data: ClientUpdate, db: AsyncSession = Depends(get_async_session)):
     result = await db.execute(select(Client).where(Client.id_client == client_id))
+
     client = result.scalar_one_or_none()
 
     if client is None:
         raise HTTPException(status_code=404, detail="Client not found")
 
-    # Delete the related 'contact' and 'cartes'
-    await db.execute(select(Contact).where(Contact.id_client == client_id))
-    await db.execute(select(Cartes).where(Cartes.client_id == client_id))
+    for key, value in client_data.model_dump(exclude_unset = True).items():
+        setattr(client, key, value)
 
-    # Finally, delete the client
-    await db.delete(client)
     await db.commit()
+    await db.refresh(client)
 
-    return {"detail": "Client and related data deleted successfully"}
+    return client
 
+@router.patch("/clients/{client.id}/membership")
+async def upgrade_membership(client_id: int, new_membership: int, db: AsyncSession = Depends(get_async_session)):
+    result = await db.execute(select(CartFidelite).where(CartFidelite.id_client == client_id))
 
+    client = result.scalar_one_or_none()
 
+    if client is None:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    setattr(client, "id_membership", new_membership)
 
+    await db.commit()
+    await db.refresh(client)
+
+    return client

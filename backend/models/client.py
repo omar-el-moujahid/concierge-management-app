@@ -8,6 +8,7 @@ class Client(Base):
     id_client = Column(Integer, primary_key=True, index=True)
     nom_client = Column(String(100))
     prenom_client = Column(String(100))
+    hash_password = Column(String(255), nullable=False)
 
     contact = relationship("Contact", back_populates="client", uselist=False)
     commandes = relationship("Commande", back_populates="client")

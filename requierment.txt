@@ -3,3 +3,4 @@ sqlalchemy
 psycopg
 asyncpg
 python-dotenv
+fastapi

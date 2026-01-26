@@ -13,7 +13,7 @@ function HeaderNavigation() {
   const handleLogout = () => {
     console.log("Logging out...");
     localStorage.removeItem("token");
-    navigate("/log");
+    navigate("/loginadmin");
   };
 
   return (

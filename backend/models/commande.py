@@ -9,10 +9,21 @@ class Commande(Base):
     id_commande = Column(Integer, primary_key=True)
     date_commande = Column(Date)
     date_arriver = Column(Date)
-    status = Column(Enum(StatusCommande), nullable=False)
+    status = Column(
+        Enum(
+            StatusCommande,
+            name="status_commande",  
+            create_type=False        
+        ),
+        nullable=True
+    )
     note = Column(String(255))
+
     id_client = Column(Integer, ForeignKey("client.id_client"))
+    id_facture = Column(Integer, ForeignKey("facture.id_facture"))  
 
     client = relationship("Client", back_populates="commandes")
     details = relationship("DetailsCommande", back_populates="commande")
+
     facture = relationship("Facture", back_populates="commande", uselist=False)
+
