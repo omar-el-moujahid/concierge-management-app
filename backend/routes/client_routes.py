@@ -4,11 +4,14 @@ from database import get_async_session
 from models.client import Client
 from models.contact import Contact
 from models.telephone import Telephone
+from models.cart_fedelite import CartFidelite
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select, func
 from models.commande import Commande
 from models.detailsCommande import DetailsCommande
+from pydantic import BaseModel
+from typing import Optional
 router = APIRouter()
 
 @router.get("/clients")
@@ -164,14 +167,50 @@ async def delete_client(client_id: int, db: AsyncSession = Depends(get_async_ses
 
     # Delete the related 'contact' and 'cartes'
     await db.execute(select(Contact).where(Contact.id_client == client_id))
-    await db.execute(select(Cartes).where(Cartes.client_id == client_id))
+    await db.execute(select(CartFidelite).where(CartFidelite.client_id == client_id))
 
     # Finally, delete the client
     await db.delete(client)
     await db.commit()
 
+
     return {"detail": "Client and related data deleted successfully"}
 
+# nouveau code
 
+class ClientUpdate(BaseModel):
+    nom_client: Optional[str] = None
+    prenom_client: Optional[str] = None
 
+@router.patch("/clients/{client.id}")
+async def update_client(client_id: int, client_data: ClientUpdate, db: AsyncSession = Depends(get_async_session)):
+    result = await db.execute(select(Client).where(Client.id_client == client_id))
 
+    client = result.scalar_one_or_none()
+
+    if client is None:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    for key, value in client_data.model_dump(exclude_unset = True).items():
+        setattr(client, key, value)
+
+    await db.commit()
+    await db.refresh(client)
+
+    return client
+
+@router.patch("/clients/{client.id}/membership")
+async def upgrade_membership(client_id: int, new_membership: int, db: AsyncSession = Depends(get_async_session)):
+    result = await db.execute(select(CartFidelite).where(CartFidelite.id_client == client_id))
+
+    client = result.scalar_one_or_none()
+
+    if client is None:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    setattr(client, "id_membership", new_membership)
+
+    await db.commit()
+    await db.refresh(client)
+
+    return client
