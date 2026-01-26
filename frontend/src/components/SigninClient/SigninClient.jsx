@@ -11,7 +11,7 @@ import {
   MDBCol,
 } from "mdb-react-ui-kit";
 
-import "./Log.css";
+import "./SigninClient.css";
 import stockImage from "../images/stock_cositiques.jpg";
 
 export default function Log() {
@@ -104,7 +104,7 @@ useEffect(() => {
             }}
           >
             <MDBCardBody className="p-5 shadow-5 text-center">
-              <h2 className="fw-bold mb-5">Inscription Admin</h2>
+              <h2 className="fw-bold mb-5">Inscription Client</h2>
 
               <form onSubmit={handleSubmit}>
                 <MDBRow>
@@ -159,7 +159,7 @@ useEffect(() => {
                   color="secondary"
                   outline
                   className="w-100"
-                  onClick={() => navigate("/loginadmin")}
+                  onClick={() => navigate("/loginclient")}
                 >
                   Déjà un compte ? Se connecter
                 </MDBBtn>
@@ -169,9 +169,9 @@ useEffect(() => {
                   color="secondary"
                   outline
                   className="w-100"
-                  onClick={() => navigate("/signinclient")}
+                  onClick={() => navigate("/log")}
                 >
-                  Client
+                  Admin
                 </MDBBtn>
 
               </form>

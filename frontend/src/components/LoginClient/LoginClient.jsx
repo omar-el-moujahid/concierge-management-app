@@ -11,12 +11,10 @@ import {
   MDBCol,
 } from "mdb-react-ui-kit";
 
-import "./Log.css";
+import "./LoginClient.css";
 import stockImage from "../images/stock_cositiques.jpg";
 
 export default function Log() {
-  const [nom, setNom] = useState("");
-  const [prenom, setPrenom] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [is_passed , setIs_passed] = useState(true);
@@ -53,8 +51,6 @@ useEffect(() => {
     e.preventDefault();
 
     const data = {
-      nom: nom,
-      prenom: prenom,
       email: email,
       password: password,
     };
@@ -104,32 +100,11 @@ useEffect(() => {
             }}
           >
             <MDBCardBody className="p-5 shadow-5 text-center">
-              <h2 className="fw-bold mb-5">Inscription Admin</h2>
+              <h2 className="fw-bold mb-5">Connexion client</h2>
 
               <form onSubmit={handleSubmit}>
                 <MDBRow>
                   {!is_passed && <p style={{color:"red"}}>Email ou mot de passe incorrect</p>}
-                  <MDBCol md="6">
-                    <MDBInput
-                      wrapperClass="mb-4"
-                      label="Nom"
-                      type="text"
-                      value={nom}
-                      onChange={(e) => setNom(e.target.value)}
-                      required
-                    />
-                  </MDBCol>
-
-                  <MDBCol md="6">
-                    <MDBInput
-                      wrapperClass="mb-4"
-                      label="Prénom"
-                      type="text"
-                      value={prenom}
-                      onChange={(e) => setPrenom(e.target.value)}
-                      required
-                    />
-                  </MDBCol>
                 </MDBRow>
 
                 <MDBInput
@@ -151,17 +126,7 @@ useEffect(() => {
                 />
 
                 <MDBBtn type="submit" className="w-100 mb-4">
-                  S’inscrire
-                </MDBBtn>
-
-                <MDBBtn
-                  type="button"
-                  color="secondary"
-                  outline
-                  className="w-100"
-                  onClick={() => navigate("/loginadmin")}
-                >
-                  Déjà un compte ? Se connecter
+                  Se Connecter
                 </MDBBtn>
 
                 <MDBBtn
@@ -171,7 +136,17 @@ useEffect(() => {
                   className="w-100"
                   onClick={() => navigate("/signinclient")}
                 >
-                  Client
+                  Pas de compte ? S'inscrire
+                </MDBBtn>
+
+                <MDBBtn
+                  type="button"
+                  color="secondary"
+                  outline
+                  className="w-100"
+                  onClick={() => navigate("/loginadmin")}
+                >
+                  Admin
                 </MDBBtn>
 
               </form>
