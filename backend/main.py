@@ -1,6 +1,4 @@
-from http.client import HTTPException
-import token
-from fastapi import FastAPI , Depends
+from fastapi import FastAPI , Depends, HTTPException, status
 from database import engine, Base
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -17,11 +15,10 @@ from models.commande import Commande
 from models.admin import Admin
 from models.detailsCommande import DetailsCommande
 from sqlalchemy.orm import selectinload
-from core.security import get_current_admin, verify_password, create_access_token
+from core.security import get_current_admin, verify_password, create_access_token, hash_password
 from schemas.auth import LoginAdmin
 from jose import JWTError, jwt
-from fastapi import Depends, HTTPException
-from core.security import JWTError, SECRET_KEY, ALGORITHM
+from core.security import SECRET_KEY, ALGORITHM
 from routes import client_routes, commande_routes
 from sqlalchemy.orm import selectinload
 # pour ajouter des en-têtes CORS
@@ -48,7 +45,8 @@ async def login_admin(data: LoginAdmin, db: AsyncSession = Depends(get_async_ses
     result = await db.execute(select(Admin).where(Admin.email == data.email))
     admin = result.scalar_one_or_none()
 
-    if not admin or not verify_password(data.password, admin.hash_password):
+    print(data.password)
+    if not admin or not verify_password(hash_password(data.password), admin.hash_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email ou mot de passe incorrect"
@@ -71,6 +69,9 @@ async def login_admin(data: LoginAdmin, db: AsyncSession = Depends(get_async_ses
     }
 
 # Dependency to get current admin
+
+app.include_router(client_routes.router, prefix="/api")
+app.include_router(commande_routes.router, prefix="/api")
 
 @app.get("/auth/me")
 async def me(admin: Admin = Depends(get_current_admin),db: AsyncSession = Depends(get_async_session)):
@@ -108,12 +109,24 @@ async def me(admin: Admin = Depends(get_current_admin),db: AsyncSession = Depend
         }
     }
 
+@app.post("/auth/loginclient")
+async def login_admin(data: LoginAdmin, db: AsyncSession = Depends(get_async_session)):
+    subq = select(Contact.id_client).where(Contact.email == data.email).scalar_subquery()
+    result = await db.execute(select(Client).where(Client.id_client == subq))
+    client = result.scalar_one_or_none()
 
-
-
-# =======================Client===============================
-
-app.include_router(client_routes.router)
-
-# =======================Commande===============================
-app.include_router(commande_routes.router)
+    if not client or not verify_password(data.password, client.hash_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email ou mot de passe incorrect"
+        )
+    
+    token = create_access_token({
+        "sub": data.email,
+        "role": "client"
+    })
+    
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }
