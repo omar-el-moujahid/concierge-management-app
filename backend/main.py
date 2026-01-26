@@ -130,3 +130,11 @@ async def login_admin(data: LoginAdmin, db: AsyncSession = Depends(get_async_ses
         "access_token": token,
         "token_type": "bearer"
     }
+
+
+# =======================Client===============================
+
+app.include_router(client_routes.router)
+
+# =======================Commande===============================
+app.include_router(commande_routes.router)
