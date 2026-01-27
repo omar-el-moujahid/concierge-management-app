@@ -193,7 +193,7 @@ async def update_client(client_id: int, client_data: ClientUpdate, db: AsyncSess
 
     return client
 
-@router.patch("/clients/{client.id}/membership")
+@router.patch("/clients/{client_id}/membership")
 async def upgrade_membership(client_id: int, new_membership: int, db: AsyncSession = Depends(get_async_session)):
     result = await db.execute(select(CartFidelite).where(CartFidelite.id_client == client_id))
 

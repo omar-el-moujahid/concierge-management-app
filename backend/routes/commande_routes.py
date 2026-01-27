@@ -36,6 +36,7 @@ class CommandeUpdate(BaseModel):
     status: Optional[str] = None
     note: Optional[str] = None
     id_client: Optional[int] = None
+    id_facture: Optional[int] = None
 
 class CommandeCreate(BaseModel):
     date_commande: Optional[date] = None
@@ -43,6 +44,7 @@ class CommandeCreate(BaseModel):
     status: Optional[str] = None
     note: Optional[str] = None
     id_client: Optional[int] = None
+    id_facture: Optional[int] = None
     detailscommande: List[DetailsCommandeCreate]
 
 @router.get("/commandes/liste/{id_client}")
@@ -139,7 +141,8 @@ async def create_commande(commande_data: CommandeCreate, db: AsyncSession = Depe
         date_arriver = commande_data.date_arriver,
         status = commande_data.status,
         note = commande_data.note,
-        id_client = commande_data.id_client
+        id_client = commande_data.id_client,
+        id_facture = commande_data.id_facture
     )
 
     db.add(new_commande)
