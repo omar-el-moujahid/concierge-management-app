@@ -5,6 +5,7 @@ from database import get_async_session
 from models.facture import Facture
 from sqlalchemy.future import select, sum
 from sqlalchemy.orm import selectinload
+from models.commande import Commande
 from sqlalchemy import select, func, delete
 from pydantic import BaseModel
 from typing import Optional
@@ -42,6 +43,13 @@ async def get_facture(facture_id: int, db: AsyncSession = Depends(get_async_sess
         raise HTTPException(status_code=404, detail="Client not found")
 
     return facture
+
+@router.get("/factures/client/{id_client}")
+async def get_facture_client(id_client: int, db: AsyncSession = Depends(get_async_session)):
+    subq = (select(Commande.id_facture).where(Commande.id_client == id_client).scalar_subquery())
+    result = await db.execute(select(Facture).where(Facture.id_facture == subq).order_by(Facture.id_facture))
+    factures = result.scalars().all()
+    return factures
 
 @router.post("/factures")
 async def create_facture(facture_data: FactureCreate, db: AsyncSession = Depends(get_async_session)):
