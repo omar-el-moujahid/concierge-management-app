@@ -12,6 +12,7 @@ class Commande(Base):
     status = Column(Enum(StatusCommande), nullable=False)
     note = Column(String(255))
     id_client = Column(Integer, ForeignKey("client.id_client"))
+    id_facture = Column(Integer, ForeignKey("facture.id_facture"))
 
     client = relationship("Client", back_populates="commandes")
     details = relationship("DetailsCommande", back_populates="commande")

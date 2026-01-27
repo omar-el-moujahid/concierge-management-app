@@ -12,7 +12,6 @@ class Facture(Base):
     frais_livraison = Column(DECIMAL(10, 2), default=0)
     remise = Column(DECIMAL(10, 2), default=0)
     montant_total = Column(DECIMAL(10, 2), nullable=False)
-    id_commande = Column(Integer, ForeignKey("commande.id_commande"))
 
-    commande = relationship("Commande", back_populates="facture")
+    commandes = relationship("Commande", back_populates="facture")
     paiements = relationship("Paiement", back_populates="facture")
