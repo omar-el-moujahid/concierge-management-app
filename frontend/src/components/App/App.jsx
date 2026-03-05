@@ -15,13 +15,15 @@ import ClientsPage from "../Client/ClientsPage";
 import ClientProfil from "../Client/Client";
 import Commandes from "../command/commandes";
 import AjouterCommande from "../command/AjouterCommande";
-function App() {
+import Log from "../Login/Log";
+
+function App() {``
   return (
     <BrowserRouter>
       <div className="">
         <Routes>
-          <Route  path='/' element={<LoginAdmin />} />
-          <Route path="/loginadmin" element={<LoginAdmin />} />
+          <Route  path='/' element={<Log />} />
+          <Route path="/log" element={<Log />} />
           <Route path="/loginclient" element={<LoginClient />} />
           <Route path="/signinclient" element={<SigninClient />} />
           <Route

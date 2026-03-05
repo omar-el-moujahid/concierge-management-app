@@ -13,5 +13,5 @@ class Facture(Base):
     remise = Column(DECIMAL(10, 2), default=0)
     montant_total = Column(DECIMAL(10, 2), nullable=False)
 
-    commandes = relationship("Commande", back_populates="facture")
+    commande = relationship("Commande", back_populates="facture", uselist=False)
     paiements = relationship("Paiement", back_populates="facture")
