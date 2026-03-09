@@ -54,8 +54,17 @@ jobs:
       # Docker Build
       # ----------------------
 
-      - name: Build Docker images
-        run: docker compose build
+      - name: Build backend image
+        run: docker compose build web
+
+      - name: Start containers
+        run: docker compose up -d
+
+      - name: Check containers
+        run: docker ps
+
+      - name: Stop containers
+        run: docker compose down
 
     
       # ----------------------
