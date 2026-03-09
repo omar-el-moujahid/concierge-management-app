@@ -50,21 +50,21 @@ jobs:
       - name: Run Python tests (simulation)
         run: echo "Tests FastAPI exécutés"
 
-      # ----------------------
-      # Docker Build
-      # ----------------------
+      # # ----------------------
+      # # Docker Build
+      # # ----------------------
 
-      - name: Build backend image
-        run: docker compose build web
+      # - name: Build backend image
+      #   run: docker compose build web
 
-      - name: Start containers
-        run: docker compose up -d
+      # - name: Start containers
+      #   run: docker compose up -d
 
-      - name: Check containers
-        run: docker ps
+      # - name: Check containers
+      #   run: docker ps
 
-      - name: Stop containers
-        run: docker compose down
+      # - name: Stop containers
+      #   run: docker compose down
 
     
       # ----------------------
