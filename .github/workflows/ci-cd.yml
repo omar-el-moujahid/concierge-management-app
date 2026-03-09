@@ -1,0 +1,66 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ----------------------
+      # Setup Node (React)
+      # ----------------------
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install React dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Build React
+        run: |
+          cd frontend
+          npm run build
+
+      # ----------------------
+      # Setup Python (FastAPI)
+      # ----------------------
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run Python tests (simulation)
+        run: echo "Tests FastAPI exécutés"
+
+      # ----------------------
+      # Docker Build
+      # ----------------------
+
+      - name: Build Docker images
+        run: docker compose build
+
+    
+      # ----------------------
+      # Deployment simulation
+      # ----------------------
+
+      - name: Déploiement simulé
+        run: echo "docker push mon-image && docker run mon-image"
