@@ -51,6 +51,8 @@ jobs:
         # run: echo "Tests FastAPI exécutés"
         run : |
           cd backend
+          # pip install -r requirements.txt
+          pip install pytest
           pytest tests/  
 
       # # ----------------------
