@@ -49,6 +49,9 @@ jobs:
 
       - name: Run Python tests (simulation)
         run: echo "Tests FastAPI exécutés"
+        run : |
+          cd backend
+          pytest tests/  
 
       # # ----------------------
       # # Docker Build
