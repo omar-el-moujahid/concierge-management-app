@@ -48,7 +48,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Python tests (simulation)
-        run: echo "Tests FastAPI exécutés"
+        # run: echo "Tests FastAPI exécutés"
         run : |
           cd backend
           pytest tests/  
